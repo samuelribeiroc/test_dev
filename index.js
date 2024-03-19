@@ -47,13 +47,31 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 var debug_1 = require("debug");
-var logger = (0, debug_1.default)("core");
+var logger = (0, debug_1.default)('core');
 var delays = __spreadArray([], Array(50), true).map(function () { return Math.floor(Math.random() * 900) + 100; });
 var load = delays.map(function (delay) { return function () {
     return new Promise(function (resolve) {
         setTimeout(function () { return resolve(Math.floor(delay / 100)); }, delay);
     });
 }; });
+function processTask(queue, results) {
+    return __awaiter(this, void 0, void 0, function () {
+        var task, result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!(queue.length > 0)) return [3 /*break*/, 2];
+                    task = queue.shift();
+                    return [4 /*yield*/, task()];
+                case 1:
+                    result = _a.sent();
+                    results.push(result);
+                    return [3 /*break*/, 0];
+                case 2: return [2 /*return*/];
+            }
+        });
+    });
+}
 var throttle = function (workers, tasks) { return __awaiter(void 0, void 0, void 0, function () {
     var queue, results, workersPromises;
     return __generator(this, function (_a) {
@@ -69,43 +87,22 @@ var throttle = function (workers, tasks) { return __awaiter(void 0, void 0, void
         }
     });
 }); };
-function processTask(queue, results) {
-    return __awaiter(this, void 0, void 0, function () {
-        var task, result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (!(queue.length > 0)) return [3 /*break*/, 2];
-                    task = queue.shift();
-                    return [4 /*yield*/, task()];
-                case 1:
-                    result = _a.sent();
-                    results.push(result);
-                    return [3 /*break*/, 0];
-                case 2:
-                    ;
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-;
 var bootstrap = function () { return __awaiter(void 0, void 0, void 0, function () {
     var start, answers;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                logger("Starting...");
+                logger('Starting...');
                 start = Date.now();
                 return [4 /*yield*/, throttle(5, load)];
             case 1:
                 answers = _a.sent();
-                logger("Done in %dms", Date.now() - start);
-                logger("Answers: %O", answers);
+                logger('Done in %dms', Date.now() - start);
+                logger('Answers: %O', answers);
                 return [2 /*return*/];
         }
     });
 }); };
 bootstrap().catch(function (err) {
-    logger("General fail: %O", err);
+    logger('General fail: %O', err);
 });
